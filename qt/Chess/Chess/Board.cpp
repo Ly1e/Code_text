@@ -86,7 +86,7 @@ QPoint Board::center(int id)
     return center(_s[id]._row,_s[id]._col);
 }
 //判断关系式
-int Board::ralation(int row1, int col1, int row, int col)
+int Board::relation(int row1, int col1, int row, int col)
 {
     return qAbs(row1-row)*10+qAbs(col1-col);
 }
@@ -205,101 +205,71 @@ void Board::drawStone(QPainter& painter,int id)
 }
 
 /***************************规则函数**********************************/
-bool Board::canMoveJiang(int moveid,int row,int col,int)
-{
-    /*目标位置只能在九宫格内
-    移动的步长为一个格子（d）
-    面将可以直接吃*/
-    if(_s[moveid]._red)
-    {
-        if(row > 2)
-        {
-            return false;
-        }
-    }
-    else
-    {
-        if(row < 7 )
-        {
-            return false;
-        }
-    }
-    if(col < 3 || col > 5)
-    {
-        return false;
-    }
+bool Board::canMoveJiang(int moveid,int row,int col,int killid)
+{   /*  将、帅
+        1.首先目标位置在九宫内
+        2.移动的步长是一个格子
+    */
+    if(killid != -1 && _s[killid]._type == Stone::JIANG)
+        return canMoveChe(moveid, killid, row, col);
 
-//    int dr = _s[moveid]._row - row;     //dr 和 dc 必然有一个要等于0，因为是在一条直线上移动
-//    int dc = _s[moveid]._col - col;     //dr 和 dc 必然有一个要等于0，另一个必然为1或者-1
-//    int d = abs(dr)*10 + abs(dc);       // 马12,21 相22 兵10,1
     int row1,col1;
-    GetRowCol(row1,col1,moveid);
-    int r = ralation(row1,col1,row,col);
-    if(r == 1 || r == 10)
+    GetRowCol(row1, col1, moveid);
+    int r = relation(row1, col1, row, col);
+    if(r != 1 && r != 10) //d == 1 或10是 兵或将  //12 21是马，22时是相
+        return false;
+
+    if(col < 3 || col > 5) //列不分红黑，均必须在第3,4,5列
+        return false;
+    if(isBottomSide(moveid))
     {
-        return true;
+        if(row < 7) return false;
     }
-    return false;
+    else                //if嵌套小心，把这个大的else 和下面的if分开
+    {
+        if(row > 2) return false;
+    }
+    return true;
 }
 
 bool Board::canMoveShi(int moveid,int row,int col,int)
 {
-    /*目标位置只能在九宫格内
-    移动的步长为一个格子（d）*/
-    if(_s[moveid]._red)
+    int row1,col1;
+    GetRowCol(row1, col1, moveid);
+    int r = relation(row1, col1, row, col);
+    if(r != 11) return false;
+
+    if(col < 3 || col > 5) return false;
+    if(isBottomSide(moveid))
     {
-        if(row > 2)
-        {
-            return false;
-        }
+        if(row < 7) return false;
     }
     else
     {
-        if(row < 7 )
-        {
-            return false;
-        }
+        if(row > 2) return false;
     }
-    if(col < 3 || col > 5)
-    {
-        return false;
-    }
-
-    int row1,col1;
-    GetRowCol(row1,col1,moveid);
-    int r = ralation(row1,col1,row,col);
-    if(r == 11)
-    {
-        return true;
-    }
-    return false;
+    return true;
 }
 
-bool Board::canMoveXiang(int moveid,int row,int col,int)
+bool Board::canMoveXiang(int moveid, int row, int col,int)
 {
     int row1,col1;
-    GetRowCol(row1,col1,moveid);
-    int r = ralation(row1,col1,row,col);
-    if(r != 22)
-    {
-        return false;
-    }
+    GetRowCol(row1, col1, moveid);
+    int r = relation(row1, col1, row, col);
+    if(r != 22) return false;
 
-    int r_eye = (row + row1)/2;
-    int c_eye = (col + col1)/2;
-    if(getStoneId(r_eye,c_eye) != -1)
-    {
+    int rEye = (row+row1)/2;
+    int cEye = (col+col1)/2;
+    if(getStoneId(rEye, cEye) != -1)    //相眼上没有棋子才能移动
         return false;
-    }
-    if(_s[moveid]._red)
+
+    if(isBottomSide(moveid))        //网络对战时是上下颠倒，会影响判断
     {
-        if(row > 4)
-            return false;
+        if(row < 4) return false;
     }
     else
     {
-        if(row < 5)
-            return false;
+        if(row > 5) return false;
     }
     return true;
 }
@@ -323,7 +293,7 @@ bool Board::canMoveMa(int moveid,int row,int col,int)
 {
     int row1,col1;
     GetRowCol(row1,col1,moveid);
-    int r = ralation(row1,col1,row,col);
+    int r = relation(row1,col1,row,col);
     if(r != 12 && r !=21)
     {
         return false;
@@ -372,50 +342,25 @@ bool Board::canMovePao(int moveid,int row,int col,int killid)
 
 bool Board::canMoveBing(int moveid,int row,int col,int)
 {
-    int dr = _s[moveid]._row - row;
-    int dc = _s[moveid]._col - col;
-    int d = abs(dr)*10 + abs(dc);
-    if(_s[moveid]._red)             //红兵
+    int row1,col1;
+    GetRowCol(row1, col1, moveid);
+    int r = relation(row1, col1, row, col);
+    if(r != 1 && r != 10) return false;
+
+    if(isBottomSide(moveid))    //未过河
     {
-        if(row < _s[moveid]._row)
-        {
+        if(row > row1) //目标行大于原始行，即返回
             return false;
-        }
-        if(row <= 4)
-        {
-            if(d == 10)
-            {
-                return true;
-            }
-        }
-        if(row > 4)
-            if(d == 10 || d == 1)
-            {
-                return true;
-            }
+        if(row1 >= 5 && row == row1)    //没有过河不能横着走
+            return false;
     }
-    else                            //黑兵
+    else
     {
-        if(row > _s[moveid]._row)
-        {
-            return false;
-        }
-        if(row >= 5)
-        {
-            if(d == 10)
-            {
-                return true;
-            }
-        }
-        if(row < 5)
-        {
-            if(d == 10 || d == 1)
-            {
-                return true;
-            }
-        }
+        if(row < row1) return false;
+        if(row1 <= 4 && row == row1) return false;
     }
-    return false;
+
+    return true;
 }
 
 bool Board::canMove(int moveid,int row,int col,int killid)

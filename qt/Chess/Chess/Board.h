@@ -71,7 +71,7 @@ public:
     int getStoneCountAtLine(int row1,int col1,int row,int col);     //返回两点之间的棋子的个数，0表示没有，-1表示两点不在一条直线上
     void GetRowCol(int& row1,int& col1,int id);         //根据id号获取行列值
     bool isBottomSide(int id);
-    int ralation(int row1,int col1,int row,int col);
+    int relation(int row1,int col1,int row,int col);
 
 signals:
 
