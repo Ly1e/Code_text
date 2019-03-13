@@ -1,211 +1,426 @@
 #include "Board.h"
 #include <QPainter>
-#include<QMouseEvent>
+#include <QMouseEvent>
+#include <QDebug>
 
-Board::Board(QWidget *parent) : QWidget(parent)
+//带参宏，获取id对应棋盘的行列
+#define GetRowCol(__row, __col, __id) \
+    int __row = _s[__id]._row;\
+    int __col = _s[__id]._col
+
+Board::Board(QWidget *parent) :
+    QFrame(parent)
 {
-    this->_r = 30;
-    init(true);
+    this->_r = 20;
+    setMinimumSize(_r*18+1, _r*20+1);       //设置窗体最小值
+    init(true);                             //画棋盘
 }
 
-void Board::init(bool beRedSide)
-{
-    for(int i=0;i<32;++i)
-    {
-        _s[i].init(i);                                          //初始化了32个棋子的位置
-    }
-    _selectid = -1;                                             //此时没有选择棋子，_selectid初始置为-1
-    _bRedTurn = true;           //起手红先走
-    _beSide = beRedSide;
-}
 Board::~Board()
 {
 
 }
 
-QSize Board::sizeHint() const
+void Board::init(bool bRedSide)
 {
-    return QSize(20*this->_r+1,22*this->_r+1);
+    for(int i=0; i<32; ++i)                 //之前只是定义了棋子数组未初始化。
+    {
+        _s[i].init(i);                      //此处开始初始化赋值，包括初始化位置
+    }
+    if(bRedSide)
+    {
+        for(int i=0; i<32; ++i)
+        {
+            _s[i].rotate();
+        }
+    }
+
+    _selectid = -1;     //初始没有选中棋子
+    _bRedTurn = true;   //勿忘初始默认为-1
+    _bSide = bRedSide;  //初始默认为红方先走
+    update();
 }
 
 void Board::paintEvent(QPaintEvent *)
 {
-    QPainter painter(this);
-    int d = 2 * this->_r;                                                 //格子为正方形，一个格子的宽高为d
+    int r = height()/20;
+    _r = r;
+    _off = QPoint(r+1, r+1);        //左上方的車与窗口角落的偏移,点（21,21）
 
-    painter.setPen(QPen(Qt::black,2));
+    QPainter p(this);
+    p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-    //画10条横线
-    for (int i = 1; i <= 10; ++i)
+    p.save();                       //save() 用于保存 QPainter当前设置的状态（状态有画笔，画刷，字体，变换（旋转，移动，切变，缩放）等）
+    drawPlate(p);                   //画棋盘
+    p.restore();                    //restore() 用于恢复 QPainter上一次保存的设置的状态
+
+    p.save();
+    drawPlace(p);                   //画九宫格
+    p.restore();
+
+    p.save();
+    drawInitPosition(p);            //画炮兵位置上的4个折角
+    p.restore();
+
+    p.save();
+    drawStone(p);                   //画棋子
+    p.restore();
+}
+//绘制32个棋子
+void Board::drawStone(QPainter &p)
+{
+    for(int i=0; i<32; i++)
     {
-        painter.drawLine(QPoint(d,i*d),QPoint(9*d,i*d));
+        drawStone(p, i);
     }
-    //画9条竖线
-    for (int i = 1; i <= 9; ++i)
+}
+
+bool Board::isDead(int id)
+{
+    if(id == -1)return true;
+    return _s[id]._dead;
+}
+
+void Board::drawStone(QPainter &p, int id)
+{
+    if(isDead(id)) return;
+
+    QColor color;
+    if(red(id)) color = Qt::red;            //这个id的棋子为红色那么就用红色画
+    else color = Qt::black;                 //否则就黑色
+
+    p.setPen(QPen(QBrush(color), 2));       //设置画笔，颜色和粗细
+
+    if(id == _selectid)                     //_selectid为-1就画成黄色。因为下棋过程需要不断重绘
+        p.setBrush(Qt::gray);               //被选中填充变成灰色
+    else
+        p.setBrush(Qt::yellow);             //未变选中的都是黄色填充
+
+    p.drawEllipse(cell(id));                //画圈
+
+    p.setFont(QFont("system", _r*1.2, 700));//字体
+    p.drawText(cell(id), name(id), QTextOption(Qt::AlignCenter));//写字
+
+    p.setFont(QFont("华文隶书", 26));
+    p.drawText(QPoint(3.5*_r, 10.7*_r),"楚 河");
+    p.drawText(QPoint(11.5*_r, 10.7*_r),"汉 界");
+}
+
+QString Board::name(int id)
+{
+    return _s[id].name();
+}
+
+bool Board::red(int id)
+{
+    return _s[id]._red;
+}
+
+void Board::drawInitPosition(QPainter &p, int row, int col)
+{
+    QPoint pt = center(row, col);
+    QPoint off = QPoint(_r/6, _r/6);
+    int len = _r/3;
+
+    QPoint ptStart;
+    QPoint ptEnd;
+
+    if(col != 0)
     {
-        if (i==1 || i==9)                                       //第一条第九条为全竖线
-            painter.drawLine(QPoint(i*d,d),QPoint(i*d,10*d));   //（40,40）->(40*10)
-        else                                                    //否则要从中间断开，形成楚河汉界
+        /* 左上角 */
+        ptStart = QPoint(pt.x() - off.x(), pt.y() - off.y());
+        ptEnd = ptStart + QPoint(-len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, -len);
+        p.drawLine(ptStart, ptEnd);
+
+        /* 左下角 */
+        ptStart = QPoint(pt.x() - off.x(), pt.y() + off.y());
+        ptEnd = ptStart + QPoint(-len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, +len);
+        p.drawLine(ptStart, ptEnd);
+    }
+
+    if(col != 8)
+    {
+        /* 右下角 */
+        ptStart = QPoint(pt.x() + off.x(), pt.y() + off.y());
+        ptEnd = ptStart + QPoint(+len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, +len);
+        p.drawLine(ptStart, ptEnd);
+
+        /* 右上角 */
+        ptStart = QPoint(pt.x() + off.x(), pt.y() - off.y());
+        ptEnd = ptStart + QPoint(+len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, -len);
+        p.drawLine(ptStart, ptEnd);
+    }
+}
+
+void Board::drawInitPosition(QPainter &p)
+{
+    drawInitPosition(p, 3, 0);
+    drawInitPosition(p, 3, 2);
+    drawInitPosition(p, 3, 4);
+    drawInitPosition(p, 3, 6);
+    drawInitPosition(p, 3, 8);
+
+    drawInitPosition(p, 6, 0);
+    drawInitPosition(p, 6, 2);
+    drawInitPosition(p, 6, 4);
+    drawInitPosition(p, 6, 6);
+    drawInitPosition(p, 6, 8);
+
+    drawInitPosition(p, 2, 1);
+    drawInitPosition(p, 2, 7);
+
+    drawInitPosition(p, 7, 1);
+    drawInitPosition(p, 7, 7);
+}
+
+void Board::drawPlace(QPainter &p)
+{
+    p.drawLine(center(0, 3), center(2, 5));     //画上面的九宫格
+    p.drawLine(center(2, 3), center(0, 5));
+
+    p.drawLine(center(9, 3), center(7, 5));     //画下面的九宫格
+    p.drawLine(center(7, 3), center(9, 5));
+}
+
+void Board::drawPlate(QPainter &p)                          //画棋盘
+{
+    for(int i=0; i<10; ++i)
+    {
+        if(i==0 || i==9)
         {
-            painter.drawLine(QPoint(i*d,d),QPoint(i*d,5*d));    //从d到5d
-            painter.drawLine(QPoint(i*d,6*d),QPoint(i*d,10*d)); //从6d画到10d
+            p.setPen(QPen(Qt::black, 3, Qt::SolidLine));    //粗线画边框
+        }
+        else
+        {
+            p.setPen(QPen(Qt::black, 1, Qt::SolidLine));
+        }
+        p.drawLine(center(i, 0), center(i, 8));
+    }
+
+    for(int i=0; i<9; ++i)
+    {
+        if(i==0 || i==8)
+        {
+            p.setPen(QPen(Qt::black, 3, Qt::SolidLine));    //粗线画边框
+            p.drawLine(center(0, i), center(9, i));
+        }
+        else
+        {
+            p.setPen(QPen(Qt::black, 1, Qt::SolidLine));
+            p.drawLine(center(0, i), center(4, i));         //河道不画线
+            p.drawLine(center(5, i), center(9, i));
         }
     }
+}
 
-    //画九宫格
-    painter.drawLine(QPoint(4*d,1*d),QPoint(6*d,3*d));          //画上面的\/
-    painter.drawLine(QPoint(6*d,1*d),QPoint(4*d,3*d));          //画下面的\/
+QPoint Board::center(int row, int col)//返回象棋棋盘第row行第col列对应的像素坐标
+{
+    QPoint pt(_r*col*2, _r*row*2);//从0开始，向右方向是x方向，向下是y方向
+    return pt + _off;
+}
 
-    painter.drawLine(QPoint(4*d,8*d),QPoint(6*d,10*d));
-    painter.drawLine(QPoint(6*d,8*d),QPoint(4*d,10*d));
+QPoint Board::center(int id)//center函数重载，使得调用起来更清爽
+{
+    return center(_s[id]._row, _s[id]._col);
+}
 
-    //写字
-    painter.setFont(QFont("华文隶书", 26));
-    painter.drawText(QPoint(2*d, 5.7*d),"   楚 河                     汉 界" );
+QPoint Board::topLeft(int row, int col)
+{
+    return center(row, col) - QPoint(_r, _r);
+}
 
-    //绘制32个棋子
-    for (int i=0;i<32;++i)
+QPoint Board::topLeft(int id)
+{
+    return center(id) - QPoint(_r, _r);
+}
+
+QRect Board::cell(int row, int col)
+{
+    return QRect(topLeft(row, col), QSize(_r*2-1, _r*2-1));
+}
+
+QRect Board::cell(int id)
+{
+    return QRect(topLeft(id), QSize(_r*2-1, _r*2-1));
+}
+
+bool Board::getClickRowCol(QPoint pt, int &row, int &col)
+{
+    for(row=0; row<=9; ++row)
     {
-        drawStone(painter,i);
-    }
-}
-/***************************常用功能函数**********************************/
-
-//通过棋盘的行和列，来获得对应的像素点坐标
-QPoint Board::center(int row,int col)
-{
-    QPoint ret;
-    ret.rx() = (col+1)* _r*2;
-    ret.ry() = (row+1)* _r*2;
-    return ret;
-}
-
-//通过棋子的id获取行列值
-QPoint Board::center(int id)
-{
-    return center(_s[id]._row,_s[id]._col);
-}
-//判断关系式
-int Board::relation(int row1, int col1, int row, int col)
-{
-    return qAbs(row1-row)*10+qAbs(col1-col);
-}
-
-void Board::GetRowCol(int &row1, int &col1, int id)
-{
-    row1 = _s[id]._row;
-    col1 = _s[id]._col;
-    return;
-}
-
-int Board::getStoneId(int row, int col)
-{
-    for(int i=0;i<32;++i)
-    {
-        if((_s[i]._row == row) && (_s[i]._col == col) && (!_s[i]._dead))
+        for(col=0; col<=8; ++col)
         {
-            return i;
-        }
-    }
-    return -1;
-}
-
-bool Board::isBottomSide(int id)
-{
-    return _beSide == _s[id]._red;
-}
-
-//效率低，需要改进
-bool Board::getClickRowCol(QPoint pt,int &row,int &col)
-{
-    for(row=0;row<=9;row++)
-    {
-        for(col=0;col<=8;col++)
-        {
-            QPoint c = center(row,col);
-            int dx = c.x() - pt.x();
-            int dy = c.y() - pt.y();
-            int dist = dx*dx+dy*dy;
-            if(dist<_r*_r)              //不开方就直接用r*r
-                return true;
+            QPoint distance = center(row, col) - pt; //得到(row, col)对应的中心点与点击到的点的距离平方和
+            if(distance.x() * distance.x() + distance.y() * distance.y() < _r* _r)
+                return true;                        //pt这个点是归属于row, col对应的中心点管理的
         }
     }
     return false;
 }
 
-int Board::getStoneCountAtLine(int row1,int col1,int row2,int col2)
+void Board::mouseReleaseEvent(QMouseEvent *ev)
 {
-    int ret =0;
-    if(row1 != row2 && col1 != col2)                //都不等于意味着两点不在一条直线上
+    if(ev->button() != Qt::LeftButton)
     {
-        return -1;
+        return;
     }
-    if(row1 == row2 && col1 == col2)                //都相同意味着两点根本就是同一点
-    {
-        return -1;
-    }
-    if(row1 == row2)                                //两点所在的行相同
-    {
-        int min = col1 < col2 ?col1:col2;           //最小的列
-        int max = col1 < col2 ?col2:col1;           //最大的列
-        for(int col=min+1;col<max;++col)            //从小的列遍历到最大的列
-        {
-            if(getStoneId(row1,col) != -1)          //这条直线上有棋子
-            {
-                ++ret;                              //棋子个数
-            }
-        }
-    }
-    else
-    {
-        int min = row1 < row2 ?row1:row2;
-        int max = row1 < row2 ?row2:row1;
-        for(int row=min+1;row<max;++row)
-        {
-            if(getStoneId(row,col1) != -1)
-            {
-                ++ret;
-            }
-        }
-    }
-    return ret;
+
+    click(ev->pos());
 }
 
-//绘制棋子
-void Board::drawStone(QPainter& painter,int id)
+bool Board::canSelect(int id)
 {
-    if(_s[id]._dead)                                            //死了的棋子不画
+    return _bRedTurn == _s[id]._red;
+}
+
+void Board::trySelectStone(int id)
+{
+    if(id == -1)
         return;
 
-    //绘制中心点
-    QPoint c = center(id);
-    //drawText绘制的矩形，
-    QRect rect = QRect(c.x()-_r,c.y()-_r,_r*2,_r*2);
+    if(!canSelect(id)) return;
 
-    if(id == _selectid)
-        painter.setBrush(QBrush(Qt::gray));                    //如果棋子被选中，背景用灰色
-    else
-        painter.setBrush(QBrush(Qt::yellow));                  //否则用黄色
+    _selectid = id;
+    update();
+}
 
-    //painter.setPen(Qt::black);                                 //设置画笔颜色为黑色
-    //painter.drawEllipse(center(id),_r,_r);                     //画一个黑色的圈，半径为_r
+bool Board::sameColor(int id1, int id2)
+{
+    if(id1 == -1 || id2 == -1) return false;
 
-    if(_s[id]._red)                                            //如果棋子为红色棋子
+    return red(id1) == red(id2);
+}
+
+void Board::tryMoveStone(int killid, int row, int col)
+{
+    if(killid != -1 && sameColor(killid, _selectid))
     {
-        painter.setPen(QPen(Qt::red,2));
-        painter.drawEllipse(center(id),_r,_r);  //_r长半径 _r短半径
-        painter.drawText(rect,_s[id].getText(),QTextOption(Qt::AlignCenter));//QTextOption(Qt::AlignCenter)
-        painter.setPen(QPen(Qt::black,2));
+        trySelectStone(killid);
+        return;
     }
-    else
+
+    bool ret = canMove(_selectid, killid, row, col);
+    if(ret)
     {
-        painter.drawEllipse(center(id),_r,_r);  //_r长半径 _r短半径
-        painter.drawText(rect,_s[id].getText(),QTextOption(Qt::AlignCenter));//QTextOption(Qt::AlignCenter)
+        moveStone(_selectid, killid, row, col);
+        _selectid = -1;
+        update();
     }
 }
 
-/***************************规则函数**********************************/
-bool Board::canMoveJiang(int moveid,int row,int col,int killid)
+int Board::getStoneCountAtLine(int row1, int col1, int row2, int col2)
+{
+    int ret = 0;
+    if(row1 != row2 && col1 != col2)
+        return -1;
+    if(row1 == row2 && col1 == col2)
+        return -1;
+
+    if(row1 == row2)
+    {
+        int min = col1 < col2 ? col1 : col2;
+        int max = col1 < col2 ? col2 : col1;
+        for(int col = min+1; col<max; ++col)
+        {
+            if(getStoneId(row1, col) != -1)
+                ++ret;
+        }
+    }
+    else
+    {
+        int min = row1 < row2 ? row1 : row2;
+        int max = row1 < row2 ? row2 : row1;
+        for(int row = min+1; row<max; ++row)
+        {
+            if(getStoneId(row, col1) != -1)
+                ++ret;
+        }
+    }
+
+    return ret;  //返回直线上有多少个棋子
+}
+
+int Board::relation(int row1, int col1, int row, int col)
+{
+    return qAbs(row1-row)*10+qAbs(col1-col);
+}
+
+bool Board::canMoveChe(int moveid, int, int row, int col)
+{
+    GetRowCol(row1, col1, moveid);
+    int ret = getStoneCountAtLine(row1, col1, row, col);
+    if(ret == 0)
+        return true;
+    return false;
+}
+
+bool Board::canMoveMa(int moveid, int, int row, int col)
+{
+    GetRowCol(row1, col1, moveid);
+    int r = relation(row1, col1, row, col);
+    if(r != 12 && r != 21)
+        return false;
+
+    if(r == 12)  //行是原始位置那一行，列是要走到的那一列和起始那一列的中间值，即马腿上没有棋子才能移动
+    {
+        if(getStoneId(row1, (col+col1)/2) != -1)
+            return false;
+    }
+    else
+    {
+        if(getStoneId((row+row1)/2, col1) != -1)
+            return false;
+    }
+
+    return true;
+}
+
+bool Board::canMovePao(int moveid, int killid, int row, int col)
+{
+    GetRowCol(row1, col1, moveid);
+    int ret = getStoneCountAtLine(row, col, row1, col1);
+    if(killid != -1)    //吃对方棋子时必须隔一个棋子才行
+    {
+        if(ret == 1) return true;
+    }
+    else        //仅仅是移动的话和車是一样的
+    {
+        if(ret == 0) return true;
+    }
+    return false;
+}
+
+bool Board::canMoveBing(int moveid, int, int row, int col)
+{
+    GetRowCol(row1, col1, moveid);
+    int r = relation(row1, col1, row, col);
+    if(r != 1 && r != 10) return false;
+
+    if(isBottomSide(moveid))    //未过河
+    {
+        if(row > row1) //目标行大于原始行，即后退
+            return false;
+        if(row1 >= 5 && row == row1)    //没有过河缺想横着走
+            return false;
+    }
+    else
+    {
+        if(row < row1) return false;
+        if(row1 <= 4 && row == row1) return false;
+    }
+
+    return true;
+}
+
+bool Board::canMoveJiang(int moveid, int killid, int row, int col)
 {   /*  将、帅
         1.首先目标位置在九宫内
         2.移动的步长是一个格子
@@ -213,7 +428,6 @@ bool Board::canMoveJiang(int moveid,int row,int col,int killid)
     if(killid != -1 && _s[killid]._type == Stone::JIANG)
         return canMoveChe(moveid, killid, row, col);
 
-    int row1,col1;
     GetRowCol(row1, col1, moveid);
     int r = relation(row1, col1, row, col);
     if(r != 1 && r != 10) //d == 1 或10是 兵或将  //12 21是马，22时是相
@@ -232,9 +446,8 @@ bool Board::canMoveJiang(int moveid,int row,int col,int killid)
     return true;
 }
 
-bool Board::canMoveShi(int moveid,int row,int col,int)
+bool Board::canMoveShi(int moveid, int, int row, int col)
 {
-    int row1,col1;
     GetRowCol(row1, col1, moveid);
     int r = relation(row1, col1, row, col);
     if(r != 11) return false;
@@ -251,9 +464,8 @@ bool Board::canMoveShi(int moveid,int row,int col,int)
     return true;
 }
 
-bool Board::canMoveXiang(int moveid, int row, int col,int)
+bool Board::canMoveXiang(int moveid, int, int row, int col)
 {
-    int row1,col1;
     GetRowCol(row1, col1, moveid);
     int r = relation(row1, col1, row, col);
     if(r != 22) return false;
@@ -274,258 +486,36 @@ bool Board::canMoveXiang(int moveid, int row, int col,int)
     return true;
 }
 
-bool Board::canMoveChe(int moveid,int row,int col,int)
+bool Board::canMove(int moveid, int killid, int row, int col)
 {
-    int row1,col1;
-    GetRowCol(row1,col1,moveid);
-    int count = getStoneCountAtLine(row1,col1,row,col);         //row1,col1对应的是当前要移动的棋子,row,col是目标位置
-    if(count == 0)
-    {
-        return true;
-    }
-    else
-    {
+    if(sameColor(moveid, killid))   //moveid和killid颜色相同
         return false;
-    }
-}
 
-bool Board::canMoveMa(int moveid,int row,int col,int)
-{
-    int row1,col1;
-    GetRowCol(row1,col1,moveid);
-    int r = relation(row1,col1,row,col);
-    if(r != 12 && r !=21)
+    switch (_s[moveid]._type)
     {
-        return false;
-    }
-    int r_eye = (row + row1)/2;
-    int c_eye = (col + col1)/2;
-    if(r == 12)
-    {
-        if(getStoneId(row1,c_eye) != -1)
-        {
-            return false;
-        }
-    }
-    else
-    {
-        if(getStoneId(r_eye,col1) != -1)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool Board::canMovePao(int moveid,int row,int col,int killid)
-{
-    int row1,col1;
-    GetRowCol(row1,col1,moveid);
-    int count = getStoneCountAtLine(row1,col1,row,col);         //row1,col1对应的是当前要移动的棋子,row,col是目标位置
-    if(killid != -1)        //如果这次炮执行的操作是吃子
-    {
-        if(count == 1)      //那么炮中间必须有一个棋子
-        {
-            return true;
-        }
-    }
-    else                    //如果这次炮执行的操作是走子
-    {
-        if(count == 0)      //那么中间不需要有棋子，走法和“车”一样
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Board::canMoveBing(int moveid,int row,int col,int)
-{
-    int row1,col1;
-    GetRowCol(row1, col1, moveid);
-    int r = relation(row1, col1, row, col);
-    if(r != 1 && r != 10) return false;
-
-    if(isBottomSide(moveid))    //未过河
-    {
-        if(row > row1) //目标行大于原始行，即返回
-            return false;
-        if(row1 >= 5 && row == row1)    //没有过河不能横着走
-            return false;
-    }
-    else
-    {
-        if(row < row1) return false;
-        if(row1 <= 4 && row == row1) return false;
-    }
-
-    return true;
-}
-
-bool Board::canMove(int moveid,int row,int col,int killid)
-{
-    //如果移动的棋子和杀死的棋子颜色相同，则不能移动
-    if(_s[moveid]._red == _s[killid]._red)
-    {
-        _selectid = killid;        //选到相同颜色的棋子则换成点击这个新的棋子并且重绘
-        update();
-        return false;
-    }
-    if(moveid == killid)
-    {
-        return false;
-    }
-
-    switch (_s[moveid]._type) {
-    case Stone::JIANG:
-        return canMoveJiang(moveid,row,col,killid);
-        break;
-    case Stone::SHI:
-        return canMoveShi(moveid,row,col,killid);
-        break;
-    case Stone::XIANG:
-        return canMoveXiang(moveid,row,col,killid);
-        break;
     case Stone::CHE:
-        return canMoveChe(moveid,row,col,killid);
-        break;
+        return canMoveChe(moveid, killid, row, col);
+
     case Stone::MA:
-        return canMoveMa(moveid,row,col,killid);
-        break;
+        return canMoveMa(moveid, killid, row, col);
+
     case Stone::PAO:
-        return canMovePao(moveid,row,col,killid);
-        break;
+        return canMovePao(moveid, killid, row, col);
+
     case Stone::BING:
-        return canMoveBing(moveid,row,col,killid);
-        break;
-    default:
-        break;
+        return canMoveBing(moveid, killid, row, col);
+
+    case Stone::JIANG:
+        return canMoveJiang(moveid, killid, row, col);
+
+    case Stone::SHI:
+        return canMoveShi(moveid, killid, row, col);
+
+    case Stone::XIANG:
+        return canMoveXiang(moveid, killid, row, col);
+
     }
-
-    return true;
-}
-
-//鼠标释放
-void Board::mouseReleaseEvent(QMouseEvent *ev)
-{
-    QPoint pt = ev->pos();
-
-    click(pt);
-    /*
-    //将pt转化成象棋的行列值
-    //判断这个行列值上面有没有棋子
-    int row,col;
-    bool bRet = getClickRowCol(pt,row,col);
-    if(bRet == false)       //点到棋盘外了
-        return;
-    int i;
-    int clickid = -1;       //没有点到棋子
-    for(i=0;i<32;i++)       //根据行列值获得在这个点的棋子的id
-    {
-        if(_s[i]._row == row && _s[i]._col == col && _s[i]._dead == false)
-            break;
-    }
-
-    if(i<32)
-    {
-        clickid = i;
-    }
-    if(_selectid == -1)
-    {
-        if(clickid != -1)
-        {
-            if(_bRedTurn == _s[clickid]._red)
-            {
-                _selectid = clickid;        //第一次点击，获得点击的棋子的id并赋值给_selectid
-                update();
-            }
-             //重绘
-        }
-    }
-    else                                //第二次点击，
-    {
-        if(canMove(_selectid,row,col,clickid))
-        {
-            _s[_selectid]._row = row;           //把点击位置的行和列作为被选中的棋子新的行和列
-            _s[_selectid]._col = col;
-            if(clickid != -1)                   //第二次点击的位置点击到了棋子
-            {
-                _s[clickid]._dead =true;        //那么把这个棋子杀死
-            }
-            _selectid = -1;                     //走完了置成-1，为没有棋子被选中，否则仍然在选中状态
-            _bRedTurn = !_bRedTurn;
-            update();                           //重绘
-        }
-        else                                    //不能移动
-        {
-            if(clickid == _selectid)            //因为第二次点击还是点击相同的棋子
-            {
-                _selectid = -1;                 //取消选择
-                clickid = -1;
-                update();                       //重绘
-            }
-            if(_s[_selectid]._red == _s[clickid]._red)//因为第二次点击的是相同颜色的棋子
-            {
-                _selectid = clickid;            //换选择并且重绘
-                update();
-            }
-        }
-    }*/
-}
-
-void Board::click(QPoint point)
-{
-    int row, col;
-
-    if (!getClickRowCol(point, row, col))   //如果在棋盘外,不做任何反应
-        return;
-
-    int id = getStoneId(row, col);
-    click(id, row, col);
-}
-
-void Board::click(int clickid, int row, int col)
-{
-    if(_selectid == -1)  //如果之前没有棋子被选中
-    {
-        trySelectStone(clickid);
-    }
-    else
-    {
-        tryMoveStone(clickid, row, col);
-    }
-}
-
-void Board::trySelectStone(int id)
-{
-    if (id == -1)
-        return ;
-
-    if (_bRedTurn == _s[id]._red)
-    {
-        _selectid = id;
-        update();
-    }
-}
-
-void Board::tryMoveStone(int killid, int row, int col)
-{
-    if (canMove(_selectid, row, col, killid))
-    {
-        //这里的selectid是第一次点击选中的棋子
-        _s[_selectid]._row = row;
-        _s[_selectid]._col = col;
-        if (killid != -1)  //确保第二次也选中了棋子
-            _s[killid]._dead = true;
-        else
-            trySelectStone(killid);
-        update();
-
-        //交换玩家
-        _bRedTurn = !_bRedTurn;
-        _selectid = -1;
-    }
+    return false;       //勿忘。如果每个case后都加break;，则这里是return true
 }
 
 void Board::reliveStone(int id)
@@ -540,6 +530,11 @@ void Board::killStone(int id)
     _s[id]._dead = true;
 }
 
+bool Board::isBottomSide(int id)
+{
+    return _bSide == _s[id]._red;
+}
+
 void Board::moveStone(int moveid, int row, int col)
 {
     _s[moveid]._row = row;
@@ -548,17 +543,9 @@ void Board::moveStone(int moveid, int row, int col)
     _bRedTurn = !_bRedTurn;
 }
 
-void Board::moveStone(int moveid, int killid, int row1, int col1)
-{
-    saveStep(moveid, killid, row1, col1, _steps);
-    killStone(killid);
-    moveStone(moveid, row1, col1);
-}
-/***************************悔棋函数**********************************/
 void Board::saveStep(int moveid, int killid, int row, int col, QVector<Step*>& steps)
 {
-    int row1,col1;
-    GetRowCol(row1,col1,moveid);
+    GetRowCol(row1, col1, moveid);
     Step* step = new Step;
     step->_colFrom = col1;
     step->_colTo = col;
@@ -568,6 +555,47 @@ void Board::saveStep(int moveid, int killid, int row, int col, QVector<Step*>& s
     step->_killid = killid;
 
     steps.append(step);
+}
+
+void Board::moveStone(int moveid, int killid, int row, int col)
+{
+    saveStep(moveid, killid, row, col, _steps);
+
+    killStone(killid);
+    moveStone(moveid, row, col);
+}
+
+void Board::click(int id, int row, int col)
+{
+    if(this->_selectid == -1)
+    {
+        trySelectStone(id);
+    }
+    else
+    {
+        tryMoveStone(id, row, col);
+    }
+}
+
+void Board::click(QPoint pt)
+{
+    int row, col;
+    bool bClicked = getClickRowCol(pt, row, col);   //将pt转化成象棋的行列值
+    if(!bClicked)
+        return;
+
+    int id = getStoneId(row, col);  //判断这个行列值上面有没有棋子
+    click(id, row, col);
+}
+
+int Board::getStoneId(int row, int col)
+{
+    for(int i=0; i<32; ++i)
+    {
+        if(_s[i]._row == row && _s[i]._col == col && !isDead(i))
+            return i;
+    }
+    return -1;
 }
 
 void Board::back(Step *step)

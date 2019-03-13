@@ -1,82 +1,94 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <QWidget>
-#include "Stone.h"      //棋子类
+#include <QFrame>
+#include "Stone.h"
 #include "Step.h"
-#include <QPoint>
 #include <QVector>
 
-class Board : public QWidget
+class Board : public QFrame
 {
     Q_OBJECT
 public:
-    explicit Board(QWidget *parent = nullptr);
+    explicit Board(QWidget *parent = 0);
     ~Board();
 
-    int _r;                     /*棋子的半径,格子的一半宽*/
-    int _selectid;              //被选中的棋子
-    bool _bRedTurn;             //交换玩家,true表示红走
-    bool _beSide;                //红方 黑方
+    /* 游戏数据 */
+    Stone _s[32];//
+    int _r;                                                     //棋子半径
+    QPoint _off;                                                //車与窗口角落的偏移
+    bool _bSide;                                                //红方 黑方
 
-    QVector<Step *>_steps; //记录每走一步棋，悔棋用
-    Stone _s[32];               //32个棋子
+    QVector<Step*> _steps;                                      //记录每走一步棋，悔棋用
 
+    /* 游戏状态 */
+    int _selectid;                                              //选中的棋子编号，0-31
+    bool _bRedTurn;                                             //true表当前红方走
+    void init(bool bRedSide);                                   //摆棋子，bRedSide为true表红在下，网络对战时用
 
-    void init(bool beRedSide);  //摆棋子，beRedSide为true表示红在下
-
-    /*将棋子在棋盘中的坐标（行，列）转换成在窗口中的坐标*/
-
-    /* 绘制 */
+    /* 绘制功能 */
     void paintEvent(QPaintEvent *);
-    virtual QSize sizeHint () const;
-    void drawStone(QPainter& painter,int id);
+    void drawPlate(QPainter& p);                                //画棋盘
+    void drawPlace(QPainter& p);                                //画九宫格
+    void drawInitPosition(QPainter& p);                         //初始位置
+    void drawInitPosition(QPainter& p, int row, int col);       //炮和兵的初始位置处的折角
+    void drawStone(QPainter& p);
+    void drawStone(QPainter& p, int id);
 
-    /* 坐标转换 */
-    QPoint center(int row,int col);             //某行某列对应的棋子像素中心点
-    QPoint center(int id);                      //棋子的中心点
-    QPoint windowCenter(int row,int col);       //将窗口中的位置转换成棋盘上的位置
+    /* 坐标转换*/
+    QPoint center(int row, int col);                            //某行某列对应的棋子像素中心点
+    QPoint center(int id);                                      //棋子的中心点
+    QPoint topLeft(int row, int col);                           //某行某列对应的棋子覆盖方框的左上角点
+    QPoint topLeft(int id);
+    QRect cell(int row, int col);                               //某行某列对应的棋子覆盖方框范围
+    QRect cell(int id);
 
-    bool getClickRowCol(QPoint pt,int &row,int &col);   //点击在那个棋子圆范围内都会当做选中该棋子，如吃对方棋时用
+    bool getClickRowCol(QPoint pt, int& row, int& col);         //点击在那个棋子圆范围内都会当做选中该棋子，如吃对方棋时用
 
-    /* help */
-    int getStoneId(int row,int col);                    //根据当前行列获取棋子id,没有棋子返回-1
-    void killStone(int id);                             //吃掉这个id的棋子
-    void reliveStone(int id);                           //恢复死去的棋子，悔棋用
-    void moveStone(int moveid, int row, int col);       //moveStone只是改坐标
+    /* 帮助功能 */
+    QString name(int id);                                       //exp：数字0转换为字符車
+    bool red(int id);                                           //判断颜色，id是红的则返回true;
+    bool sameColor(int id1, int id2);                           //判断两个棋子颜色是否相同，颜色相同返回true;
+    int getStoneId(int row, int col);
+    void killStone(int id);                                     //吃掉对方的id的棋子
+    void reliveStone(int id);                                   //恢复死去的棋子，悔棋用
+    void moveStone(int moveid, int row, int col);               //moveStone只是改坐标
+    bool isDead(int id);
 
     /* 移动棋子 */
     void mouseReleaseEvent(QMouseEvent *);
-    void click(QPoint point);
+    void click(QPoint pt);
     virtual void click(int id, int row, int col);
-    void trySelectStone(int id);     //尝试选中棋子，但未必能选中，如红走时是选不中黑的棋的
-    void tryMoveStone(int killid, int row, int col);    //****moveStone还要记录吃掉的棋子，悔棋用
-    void moveStone(int moveid, int killid, int row, int col);
-    void saveStep(int moveid, int killid, int row, int col, QVector<Step*>& steps);
-    void backOne();
-    void back(Step* step);  //悔棋两步以上
+    void trySelectStone(int id);                                //尝试选中棋子，但未必能选中，如红走时是选不中黑的棋的
+    void tryMoveStone(int killid, int row, int col);            //尝试移动棋子，但未必能移动，如移到相同颜色的棋子上
+    void moveStone(int moveid, int killid, int row, int col);   //****moveStone还要记录吃掉的棋子，悔棋用
+    void saveStep(int moveid, int killid, int row, int col, QVector<Step*>& steps);//每步走棋保存
+    void backOne();                                             //悔棋一步
+    void back(Step* step);                                      //悔棋两步以上
     virtual void back();
 
-    //规则
-    bool canMove(int moveid,int row,int col,int killid);
-    bool canMoveJiang(int moveid,int row,int col,int killid);
-    bool canMoveShi(int moveid,int row,int col,int killid);
-    bool canMoveXiang(int moveid,int row,int col,int killid);
-    bool canMoveChe(int moveid,int row,int col,int killid);
-    bool canMoveMa(int moveid,int row,int col,int killid);
-    bool canMovePao(int moveid,int row,int col,int killid);
-    bool canMoveBing(int moveid,int row,int col,int killid);
+    /* 走法规则*/
+    bool canMove(int moveid, int killid, int row, int col);
+    bool canMoveChe(int moveid, int killid, int row, int col);
+    bool canMoveMa(int moveid, int killid, int row, int col);
+    bool canMovePao(int moveid, int killid, int row, int col);
+    bool canMoveBing(int moveid, int killid, int row, int col);
+    bool canMoveJiang(int moveid, int killid, int row, int col);
+    bool canMoveShi(int moveid, int killid, int row, int col);
+    bool canMoveXiang(int moveid, int killid, int row, int col);
 
-    //规则Ext
-    int getStoneCountAtLine(int row1,int col1,int row,int col);     //返回两点之间的棋子的个数，0表示没有，-1表示两点不在一条直线上
-    void GetRowCol(int& row1,int& col1,int id);         //根据id号获取行列值
-    bool isBottomSide(int id);
-    int relation(int row1,int col1,int row,int col);
+    bool canSelect(int id);                                     //红方只可选红棋
+
+    /* 规则助手 */
+    int getStoneCountAtLine(int row1, int col1, int row2, int col2);//直线上两坐标点之间getStoneCount有多少棋子，不在一条直线返回-1
+    int relation(int row1, int col1, int row, int col);         //算法规则
+    bool isBottomSide(int id);                                  //判断上下方
 
 signals:
 
 public slots:
     void slotBack();
+
 };
 
 #endif // BOARD_H
