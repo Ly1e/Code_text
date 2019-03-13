@@ -1,9 +1,11 @@
 HEADERS += \
-    board.h \
-    stone.h
+    Board.h \
+    Stone.h \
+    Step.h
 
 SOURCES += \
-    board.cpp \
     main.cpp \
-    stone.cpp
+    Board.cpp \
+    Step.cpp \
+    Stone.cpp
 QT += widgets gui

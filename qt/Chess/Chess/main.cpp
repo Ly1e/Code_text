@@ -1,6 +1,6 @@
 
 #include <QApplication>
-#include "board.h"
+#include "Board.h"
 
 int main(int argc,char* argv[])
 {

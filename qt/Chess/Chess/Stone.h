@@ -45,9 +45,9 @@ public:
         {3,8,Stone::BING},
         };
 
-        _id = id;           //传进来的id保存起来
-        _dead = false;
-        _red = id<16;       //小于16为红棋，大于16为黑棋
+        this->_id = id;           //传进来的id保存起来
+        this->_dead = false;
+        this->_red = id>=16;       //小于16为红棋，大于16为黑棋
 
         if(id<16)
         {
