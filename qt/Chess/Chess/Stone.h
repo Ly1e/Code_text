@@ -16,14 +16,14 @@ public:
 
     int _row;
     int _col;
-    TYPE _type;//是哪个棋子
-    bool _dead;//
-    bool _red;
-    int _id;
+    TYPE _type;     //是哪个棋子
+    bool _dead;     //活着还是被吃了
+    bool _red;      //棋子颜色
+    int _id;        //id号
 
-    QString name();//返回棋子中文名字，用于绘制
+    QString name(); //返回棋子中文名字，用于绘制
 
-    void rotate();//网络对战时旋转棋盘
+    void rotate();  //网络对战时旋转棋盘
 };
 
 #endif // STONE_H

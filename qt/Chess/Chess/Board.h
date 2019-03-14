@@ -49,11 +49,11 @@ public:
     QString name(int id);                                       //exp：数字0转换为字符車
     bool red(int id);                                           //判断颜色，id是红的则返回true;
     bool sameColor(int id1, int id2);                           //判断两个棋子颜色是否相同，颜色相同返回true;
-    int getStoneId(int row, int col);
+    int getStoneId(int row, int col);                           //获取当前行列位置的棋子的id，没有棋子则返回-1
     void killStone(int id);                                     //吃掉对方的id的棋子
     void reliveStone(int id);                                   //恢复死去的棋子，悔棋用
     void moveStone(int moveid, int row, int col);               //moveStone只是改坐标
-    bool isDead(int id);
+    bool isDead(int id);                                        //判断这个id的棋子是否已经死亡
 
     /* 移动棋子 */
     void mouseReleaseEvent(QMouseEvent *);

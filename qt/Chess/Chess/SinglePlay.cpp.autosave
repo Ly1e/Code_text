@@ -13,7 +13,7 @@ void SinglePlay::click(int id, int row, int col)
                   step->_rowTo,step->_colTo);
 
         delete step;
-    }
+    }   
 }
 
 void SinglePlay::fakeMove(Step* step)
@@ -21,7 +21,7 @@ void SinglePlay::fakeMove(Step* step)
     killStone(step->_killid);
     moveStone(step->_moveid,step->_rowTo,step->_colTo);
 }
-
+    
 void SinglePlay::unfakeMove(Step* step)
 {
     reliveStone(step->_killid);

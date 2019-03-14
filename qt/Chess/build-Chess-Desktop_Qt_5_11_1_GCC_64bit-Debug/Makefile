@@ -209,7 +209,6 @@ DIST          = ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/spec_pre.prf
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/qt_config.prf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/spec_post.prf \
-		../Chess/.qmake.stash \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/toolchain.prf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -394,7 +393,6 @@ Makefile: ../Chess/Chess.pro ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/linux-g+
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/qt_config.prf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/toolchain.prf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -565,7 +563,6 @@ Makefile: ../Chess/Chess.pro ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/linux-g+
 ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/qt_config.prf:
 ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/toolchain.prf:
 ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/default_pre.prf:
@@ -640,8 +637,8 @@ moc_predefs.h: ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/data/dummy.cp
 compiler_moc_header_make_all: moc_Board.cpp moc_Step.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_Board.cpp moc_Step.cpp
-moc_Board.cpp: ../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QWidget \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qwidget.h \
+moc_Board.cpp: ../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QFrame \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qframe.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtguiglobal.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qglobal.h \
@@ -667,6 +664,7 @@ moc_Board.cpp: ../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QWidget \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qversiontagging.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtgui-config.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qwidget.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qwindowdefs.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobjectdefs.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnamespace.h \
@@ -744,10 +742,13 @@ moc_Board.cpp: ../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QWidget \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qvector2d.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtouchdevice.h \
 		../Chess/Stone.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QString \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QRect \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QPainter \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainter.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtextoption.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpen.h \
 		../Chess/Step.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QPoint \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector \
 		../Chess/Board.h \
 		moc_predefs.h \
@@ -936,18 +937,22 @@ main.o: ../Chess/main.cpp ../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/Q
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qinputmethod.h \
 		../Chess/SinglePlay.h \
 		../Chess/Board.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QWidget \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QFrame \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qframe.h \
 		../Chess/Stone.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QString \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QRect \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QPainter \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainter.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtextoption.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpen.h \
 		../Chess/Step.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QPoint \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Chess/main.cpp
 
 Board.o: ../Chess/Board.cpp ../Chess/Board.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QWidget \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qwidget.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QFrame \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qframe.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtguiglobal.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qglobal.h \
@@ -973,6 +978,7 @@ Board.o: ../Chess/Board.cpp ../Chess/Board.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qversiontagging.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtgui-config.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qwidget.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qwindowdefs.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobjectdefs.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnamespace.h \
@@ -1050,16 +1056,16 @@ Board.o: ../Chess/Board.cpp ../Chess/Board.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qvector2d.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtouchdevice.h \
 		../Chess/Stone.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QString \
-		../Chess/Step.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QPoint \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QRect \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QPainter \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainter.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtextoption.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpen.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QMouseEvent
+		../Chess/Step.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QMouseEvent \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Board.o ../Chess/Board.cpp
 
 Step.o: ../Chess/Step.cpp ../Chess/Step.h \
@@ -1116,9 +1122,10 @@ Step.o: ../Chess/Step.cpp ../Chess/Step.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Step.o ../Chess/Step.cpp
 
 Stone.o: ../Chess/Stone.cpp ../Chess/Stone.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QString \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstring.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qchar.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QRect \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qrect.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmargins.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnamespace.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qglobal.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qconfig.h \
@@ -1140,20 +1147,81 @@ Stone.o: ../Chess/Stone.cpp ../Chess/Stone.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmutex.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnumeric.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qversiontagging.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qbytearray.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsize.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qpoint.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QPainter \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainter.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtguiglobal.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtgui-config.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qscopedpointer.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpixmap.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpaintdevice.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qwindowdefs.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qwindowdefs_win.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qcolor.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qrgb.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringlist.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qlist.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qalgorithms.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qiterator.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qrefcount.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnamespace.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qarraydata.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qhashfunctions.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstring.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qchar.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qbytearray.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringliteral.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringalgorithms.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringview.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringbuilder.h
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qpair.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qbytearraylist.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qregexp.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringmatcher.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qrgba64.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsharedpointer.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qshareddata.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qhash.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobject.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qcoreevent.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmetatype.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobject_impl.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qimage.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpixelformat.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtransform.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qmatrix.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpolygon.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qvector.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qregion.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qdatastream.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qiodevice.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qline.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainterpath.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtextoption.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpen.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qbrush.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qfontinfo.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qfont.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qfontmetrics.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QDebug \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qdebug.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmap.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qtextstream.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qlocale.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qvariant.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qset.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qcontiguouscache.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Stone.o ../Chess/Stone.cpp
 
 SinglePlay.o: ../Chess/SinglePlay.cpp ../Chess/SinglePlay.h \
 		../Chess/Board.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QWidget \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qwidget.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QFrame \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qframe.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtguiglobal.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qglobal.h \
@@ -1179,6 +1247,7 @@ SinglePlay.o: ../Chess/SinglePlay.cpp ../Chess/SinglePlay.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qversiontagging.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtgui-config.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qwidget.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qwindowdefs.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobjectdefs.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnamespace.h \
@@ -1256,10 +1325,13 @@ SinglePlay.o: ../Chess/SinglePlay.cpp ../Chess/SinglePlay.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qvector2d.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtouchdevice.h \
 		../Chess/Stone.h \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QString \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QRect \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QPainter \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainter.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtextoption.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpen.h \
 		../Chess/Step.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QPoint \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SinglePlay.o ../Chess/SinglePlay.cpp
 
