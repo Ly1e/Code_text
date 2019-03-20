@@ -91,7 +91,7 @@ void SinglePlay::getAllPossibleMove(QVector<Step *> &steps)
     }
 }
 
-int SinglePlay::getMaxScore(int level)
+int SinglePlay::getMaxScore(int level,int curMinScore)
 {
     if(level == 0)return calcScore();
 
@@ -107,19 +107,30 @@ int SinglePlay::getMaxScore(int level)
         steps.removeLast();
 
         fakeMove(step);                                     //尝试这样走
-        int score = getMinScore(level-1);                            //计算这样走的得分
+        int score = getMinScore(level-1,maxScore);                            //计算这样走的得分
         unfakeMove(step);                                   //撤销这次尝试
+        delete step;
 
+        if(score >= curMinScore)
+        {
+            while(steps.count())                            //清除剩下的
+            {
+                Step* step = steps.back();
+                steps.removeLast();
+                delete step;
+            }
+            return score;
+        }
         if(score > maxScore)
         {
             maxScore = score;                               //与最高得分比较，保存最高得分
         }
-        delete step;
+
     }
     return maxScore;
 }
 
-int SinglePlay::getMinScore(int level)
+int SinglePlay::getMinScore(int level,int curMaxScore)
 {
     if(level == 0)return calcScore();
 
@@ -135,14 +146,25 @@ int SinglePlay::getMinScore(int level)
         steps.removeLast();
 
         fakeMove(step);                                     //尝试这样走
-        int score = getMaxScore(level-1);                            //计算这样走的得分
+        int score = getMaxScore(level-1,minScore);                            //计算这样走的得分
         unfakeMove(step);                                   //撤销这次尝试
+        delete step;
+
+        if(score <= curMaxScore)
+        {
+            while(steps.count())                            //清除剩下的
+            {
+                Step* step = steps.back();
+                steps.removeLast();
+                delete step;
+            }
+            return score;
+        }
 
         if(score < minScore)
         {
             minScore = score;                               //与最高得分比较，保存最高得分
         }
-        delete step;
     }
     return minScore;
 }
@@ -162,7 +184,7 @@ Step* SinglePlay::getBestMove()
         steps.removeLast();
 
         fakeMove(step);                                     //尝试这样走
-        int score = getMinScore(_level-1);                          //计算这样走的得分
+        int score = getMinScore(_level-1,maxScore);                          //计算这样走的得分
         unfakeMove(step);                                   //撤销这次尝试
 
         if(score > maxScore)

@@ -21,8 +21,8 @@ public:
     void unfakeMove(Step* step);                    //撤销移动尝试
     int calcScore();                                //计算得分
 
-    int getMinScore(int level);
-    int getMaxScore(int level);
+    int getMinScore(int level,int curMaxScore);
+    int getMaxScore(int level,int curMinScore);
     \
     int _level;                                     //考虑的层次
 public slots:
