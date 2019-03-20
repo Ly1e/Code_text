@@ -6,8 +6,12 @@
 
 class SinglePlay : public Board                     //从board派生
 {
+    Q_OBJECT
 public:
-
+    SinglePlay()
+    {
+        _level = 4;
+    }
     virtual void click(int id, int row, int col);
 
     Step* getBestMove();                            //获取最好的走法
@@ -17,7 +21,12 @@ public:
     void unfakeMove(Step* step);                    //撤销移动尝试
     int calcScore();                                //计算得分
 
-    int getMinScore();
+    int getMinScore(int level);
+    int getMaxScore(int level);
+    \
+    int _level;                                     //考虑的层次
+public slots:
+    void computerMove();
 };
 
 #endif // SINGLEPLAY_H

@@ -1,4 +1,5 @@
 #include "SinglePlay.h"
+#include <QTimer>
 
 void SinglePlay::click(int id, int row, int col)
 {
@@ -8,12 +9,19 @@ void SinglePlay::click(int id, int row, int col)
 
     if(!this->_bRedTurn)
     {
-        Step*  step = getBestMove();
-        moveStone(step->_moveid,step->_killid,
-                  step->_rowTo,step->_colTo);
-
-        delete step;
+        //启动0.1ms定时器，用户下完棋子后在0.1ms后电脑再思考
+        QTimer::singleShot(100,this,SLOT(computerMove()));
     }
+}
+
+void SinglePlay::computerMove()
+{
+    Step*  step = getBestMove();
+    moveStone(step->_moveid,step->_killid,
+              step->_rowTo,step->_colTo);
+
+    delete step;
+    update();
 }
 
 void SinglePlay::fakeMove(Step* step)
@@ -83,8 +91,38 @@ void SinglePlay::getAllPossibleMove(QVector<Step *> &steps)
     }
 }
 
-int SinglePlay::getMinScore()
+int SinglePlay::getMaxScore(int level)
 {
+    if(level == 0)return calcScore();
+
+    //看看有哪些步骤可以走
+    QVector<Step*> steps;
+    getAllPossibleMove(steps);                              //这里是红旗的所有可能的走法
+
+    int maxScore = -1000000;
+    while(steps.count())
+    {
+
+        Step* step = steps.back();
+        steps.removeLast();
+
+        fakeMove(step);                                     //尝试这样走
+        int score = getMinScore(level-1);                            //计算这样走的得分
+        unfakeMove(step);                                   //撤销这次尝试
+
+        if(score > maxScore)
+        {
+            maxScore = score;                               //与最高得分比较，保存最高得分
+        }
+        delete step;
+    }
+    return maxScore;
+}
+
+int SinglePlay::getMinScore(int level)
+{
+    if(level == 0)return calcScore();
+
     //看看有哪些步骤可以走
     QVector<Step*> steps;
     getAllPossibleMove(steps);                              //这里是红旗的所有可能的走法
@@ -97,7 +135,7 @@ int SinglePlay::getMinScore()
         steps.removeLast();
 
         fakeMove(step);                                     //尝试这样走
-        int score = calcScore();                            //计算这样走的得分
+        int score = getMaxScore(level-1);                            //计算这样走的得分
         unfakeMove(step);                                   //撤销这次尝试
 
         if(score < minScore)
@@ -124,7 +162,7 @@ Step* SinglePlay::getBestMove()
         steps.removeLast();
 
         fakeMove(step);                                     //尝试这样走
-        int score = getMinScore();                          //计算这样走的得分
+        int score = getMinScore(_level-1);                          //计算这样走的得分
         unfakeMove(step);                                   //撤销这次尝试
 
         if(score > maxScore)

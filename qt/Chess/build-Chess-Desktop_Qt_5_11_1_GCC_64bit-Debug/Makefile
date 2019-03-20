@@ -55,14 +55,16 @@ SOURCES       = ../Chess/main.cpp \
 		../Chess/Step.cpp \
 		../Chess/Stone.cpp \
 		../Chess/SinglePlay.cpp moc_Board.cpp \
-		moc_Step.cpp
+		moc_Step.cpp \
+		moc_SinglePlay.cpp
 OBJECTS       = main.o \
 		Board.o \
 		Step.o \
 		Stone.o \
 		SinglePlay.o \
 		moc_Board.o \
-		moc_Step.o
+		moc_Step.o \
+		moc_SinglePlay.o
 DIST          = ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/common/unix.conf \
 		../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/common/linux.conf \
@@ -634,9 +636,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -Wall -W -dM -E -o moc_predefs.h ../../../../Qt5.11.1/5.11.1/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_Board.cpp moc_Step.cpp
+compiler_moc_header_make_all: moc_Board.cpp moc_Step.cpp moc_SinglePlay.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_Board.cpp moc_Step.cpp
+	-$(DEL_FILE) moc_Board.cpp moc_Step.cpp moc_SinglePlay.cpp
 moc_Board.cpp: ../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QFrame \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qframe.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -809,6 +811,125 @@ moc_Step.cpp: ../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
 		moc_predefs.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/bin/moc
 	/home/gaara/Qt5.11.1/5.11.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/mkspecs/linux-g++ -I/home/gaara/Code/qt/Chess/Chess -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include/QtWidgets -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include/QtGui -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include/QtCore -I. -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../Chess/Step.h -o moc_Step.cpp
+
+moc_SinglePlay.cpp: ../Chess/Board.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/QFrame \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qframe.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtguiglobal.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qglobal.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qconfig.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qtcore-config.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsysinfo.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qlogging.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qflags.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qatomic.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmutex.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnumeric.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qversiontagging.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtgui-config.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qwidget.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qwindowdefs.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qnamespace.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qwindowdefs_win.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobject.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstring.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qchar.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qbytearray.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qarraydata.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringliteral.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringalgorithms.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringview.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qlist.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qalgorithms.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qiterator.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qhashfunctions.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qpair.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qbytearraylist.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringlist.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qregexp.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qstringmatcher.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qcoreevent.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qscopedpointer.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmetatype.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qobject_impl.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmargins.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpaintdevice.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qrect.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsize.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qpoint.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpalette.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qcolor.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qrgb.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qrgba64.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qbrush.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qvector.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qmatrix.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpolygon.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qregion.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qdatastream.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qiodevice.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qline.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtransform.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainterpath.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qimage.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpixelformat.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpixmap.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsharedpointer.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qshareddata.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qhash.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qfont.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qfontmetrics.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qfontinfo.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qcursor.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qkeysequence.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qevent.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qvariant.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qmap.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qdebug.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qtextstream.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qlocale.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qset.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qurl.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qurlquery.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qfile.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qfiledevice.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qvector2d.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtouchdevice.h \
+		../Chess/Stone.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QRect \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/QPainter \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpainter.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qtextoption.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpen.h \
+		../Chess/Step.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector \
+		../Chess/SinglePlay.h \
+		moc_predefs.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/bin/moc
+	/home/gaara/Qt5.11.1/5.11.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/mkspecs/linux-g++ -I/home/gaara/Code/qt/Chess/Chess -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include/QtWidgets -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include/QtGui -I/home/gaara/Qt5.11.1/5.11.1/gcc_64/include/QtCore -I. -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../Chess/SinglePlay.h -o moc_SinglePlay.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1332,7 +1453,10 @@ SinglePlay.o: ../Chess/SinglePlay.cpp ../Chess/SinglePlay.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtGui/qpen.h \
 		../Chess/Step.h \
 		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QObject \
-		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QVector \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/QTimer \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qtimer.h \
+		../../../../Qt5.11.1/5.11.1/gcc_64/include/QtCore/qbasictimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SinglePlay.o ../Chess/SinglePlay.cpp
 
 moc_Board.o: moc_Board.cpp 
@@ -1340,6 +1464,9 @@ moc_Board.o: moc_Board.cpp
 
 moc_Step.o: moc_Step.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Step.o moc_Step.cpp
+
+moc_SinglePlay.o: moc_SinglePlay.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_SinglePlay.o moc_SinglePlay.cpp
 
 ####### Install
 
