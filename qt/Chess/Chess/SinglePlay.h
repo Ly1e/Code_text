@@ -12,6 +12,8 @@ public:
     {
         _level = 4;
     }
+
+    int _level;                                     //考虑的层次
     virtual void click(int id, int row, int col);
 
     Step* getBestMove();                            //获取最好的走法
@@ -24,7 +26,6 @@ public:
     int getMinScore(int level,int curMaxScore);
     int getMaxScore(int level,int curMinScore);
     \
-    int _level;                                     //考虑的层次
 public slots:
     void computerMove();
 };

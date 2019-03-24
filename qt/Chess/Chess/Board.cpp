@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QMessageBox>
 
 //带参宏，获取id对应棋盘的行列
 #define GetRowCol(__row, __col, __id) \
@@ -11,6 +12,7 @@
 Board::Board(QWidget *parent) :
     QFrame(parent)
 {
+    _gameOver = false;
     this->_r = 20;
     setMinimumSize(_r*18+1, _r*20+1);       //设置窗体最小值
     init(true);                             //画棋盘
@@ -288,6 +290,8 @@ void Board::trySelectStone(int id)
 
     if(!canSelect(id)) return;
 
+    if(_gameOver) return;
+
     _selectid = id;
     update();
 }
@@ -515,7 +519,7 @@ bool Board::canMove(int moveid, int killid, int row, int col)
         return canMoveXiang(moveid, killid, row, col);
 
     }
-    return false;       //勿忘。如果每个case后都加break;，则这里是return true
+    return false;       //如果每个case后都加break;，则这里是return true
 }
 
 void Board::reliveStone(int id)
@@ -561,8 +565,10 @@ void Board::moveStone(int moveid, int killid, int row, int col)
 {
     saveStep(moveid, killid, row, col, _steps);
 
-    killStone(killid);
     moveStone(moveid, row, col);
+    killStone(killid);
+    gameOver(killid);
+
 }
 
 void Board::click(int id, int row, int col)
@@ -608,6 +614,10 @@ void Board::backOne()
 {
     if(this->_steps.size() == 0) return;
 
+    if(_gameOver)
+    {
+        _gameOver = false;
+    }
     Step* step = this->_steps.last();
     _steps.removeLast();
     back(step);
@@ -624,4 +634,20 @@ void Board::back()
 void Board::slotBack()
 {
     back();
+}
+
+void Board::gameOver(int killid)
+{
+    if(_s[killid]._type == Stone::JIANG)
+    {
+        _gameOver = true;
+        if(_s[killid]._red)
+        {
+         QMessageBox::about(this,"游戏结束","黑棋获胜!");
+        }
+        else
+        {
+         QMessageBox::about(this,"游戏结束","红棋获胜!");
+        }
+    }
 }

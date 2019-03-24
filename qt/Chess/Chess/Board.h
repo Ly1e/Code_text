@@ -24,6 +24,7 @@ public:
     /* 游戏状态 */
     int _selectid;                                              //选中的棋子编号，0-31
     bool _bRedTurn;                                             //true表当前红方走
+    bool _gameOver;
     void init(bool bRedSide);                                   //摆棋子，bRedSide为true表红在下，网络对战时用
 
     /* 绘制功能 */
@@ -84,6 +85,7 @@ public:
     int relation(int row1, int col1, int row, int col);         //算法规则
     bool isBottomSide(int id);                                  //判断上下方
 
+    virtual void gameOver(int killid);
 signals:
 
 public slots:
